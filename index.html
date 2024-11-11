@@ -1,34 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Timings</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
-</head> 
-<body>
-    <header>
-        <h1 class="display-1" style="text-align: center;">Page Timings</h1>
-    </header>
-    <div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <p style="text-align: center;">Show Title</p>
-            <p style="text-align: center;">we put good things in here</p>
-            <div>
-                <h2> 0 </h2>
-                <p>Current Page</p>
-                <h2> 00.00.00</h2>
-                <p>Time Stamp</p>
-            </div>
-            <button type="submit" class="btn btn-success">Start Timer</button>
-            <button type="submit" class="btn btn-danger">Stop Timer</button>
-            <button type="reset" class="btn btn-secondary">Reset</button>
-            <button type="submit" class="btn btn-dark">Export</button>
-        </div>
+</head>
+
+<body style="font-family: monospace">
+    <div class="d-flex flex-column align-items-center" style="text-align:center">
+        <header class="border border-success" style="margin:20px">
+            <h1 class="display-1" style="text-align: center;">Page Timings</h1>
+        </header>
         <div>
-            <table>
+            <p><em>Show Title</em></p>
+            <p>we put good things in here</p>
+            <div>
+                <div>
+                    <h2> 0 </h2>
+                    <p>Current Page</p>
+                </div>
+                <div>
+                    <h2> 00.00.00</h2>
+                    <p>Time Stamp</p>
+                </div>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-success"><i class="bi bi-watch"></i>Start Timer</button>
+                <button type="submit" class="btn btn-danger"><i class="bi bi-watch"></i>Stop Timer</button>
+                <button type="reset" class="btn btn-secondary">Reset</button>
+                <button type="submit" class="btn btn-dark">Export</button>
+            </div>
+        </div>
+        <div style="margin-top: 20px;">
+            <table class="table table-light table-bordered">
                 <thead>
                     <tr>
                         <th>Page</th>
@@ -49,7 +57,9 @@
                     </tr>
             </table>
         </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
 </body>
+
 </html>
