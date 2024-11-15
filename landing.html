@@ -16,12 +16,14 @@
             <h1 class="display-1" style="text-align: center;">Page Timings</h1>
         </header>
         <div>
-            <p>Please select the show title</p>
+            <h3>Please select the show title</h3>
+
             <div>
                 <div class="m-2">
                     <input type="text" id="show-title" name="show-title" placeholder="Enter Show Title" size="40">
                     <button type="submit" id="show-submit" class="btn btn-outline-secondary">Submit</button>
                 </div>
+                <p class="text-danger d-none"id="error">*** Please fill in the field ***</p>
                 <div class="row" id="buttons">
                     <!-- <button type="submit" class="btn btn-outline-primary m-2">Show 1</button>
                     <button type="submit" class="btn btn-outline-dark m-2">Show 2</button>
@@ -35,6 +37,7 @@
             crossorigin="anonymous"></script>
         <script src="./assets/js/logic.js"></script>
         <script src="./assets/js/landing.js"></script>
+        <script src="./assets/js/redirect.js"></script>
 </body>
 
 </html>
