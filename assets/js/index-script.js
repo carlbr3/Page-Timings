@@ -1,238 +1,86 @@
-
-
-const tableEl = document.getElementById('table-container');
-const pageNumberEl = document.getElementById('current-page');
-const stopWatchEl = document.getElementById('stopwatch');
-let headerField = document.getElementById('show-title-output'); // Create variable to edit content
-let showTitleValue; // Variable to hold the show title
-let allShows;
-let currentIndex;
-let thisShow;
-let pageNumber;
-let timeStamp;
-let allEntries = [];
-let entry;
-
-//Index Init
-
-function indexInit() {
-    refreshAllShows();
-    refreshShowTitle();
-    getCurrentIndex();
-    refreshPageNumber();
-    initData();
+//Step 0: Initialize Landing page
+let allTitles = [];
+function initLanding() {
+    displayButtons();
 }
-
-indexInit();
-
-
-
-// Initialize show info
-function refreshAllShows() {
-    allShows = JSON.parse(localStorage.getItem('page-timings-show-titles'));
-    return(allShows);
-}
-
-function refreshShowTitle() {
-    showTitleValue = localStorage.getItem('page-timings-current-show'); // Retrieve Title from storage and update variable with title
-    headerField.innerHTML = showTitleValue; // update headerfield with current show title
-    return(showTitleValue);
-}
-
-function getCurrentIndex() {
-    refreshAllShows();
-    for (let i in allShows) { // Identify currentIndex value and assigns it
-        if (allShows[i].title === headerField.innerHTML) {
-            currentIndex = i;
+initLanding();
+// Step 0.1: Load local storage data to landing.html as new button elements with alternating colors
+function displayButtons() {
+    let localData = JSON.parse(localStorage.getItem("page-timings-show-titles"));
+    const buttonsBox = document.getElementById('buttons');
+    buttonsBox.innerHTML = "";
+    if (localData !== null && localData !== undefined) {
+        allTitles=[];
+        for (let i in localData) {
+            const newButton = document.createElement('button');
+            buttonsBox.appendChild(newButton);
+            buttonsBox.lastChild.textContent = localData[i].title;
+            allTitles.push(localData[i].title);
+            buttonsBox.lastChild.setAttribute('data-bs-toggle', 'modal');
+            buttonsBox.lastChild.setAttribute('data-bs-target', '#exampleModal');
+            buttonsBox.lastChild.setAttribute('class', 'modal-listener');
+            if (i % 2 === 0) {
+                buttonsBox.lastChild.classList.add('btn', 'btn-outline-primary', 'm-2');
+            } else {
+                buttonsBox.lastChild.classList.add('btn', 'btn-outline-dark', 'm-2');
+            }
         }
     }
-    return(currentIndex);
 }
-
-function refreshPageNumber() {
-    return(pageNumberEl.innerHTML);
+// Step 1: Take user input for show title
+const showObject = {
+    title: "",
+    entries: []
 }
-
-function refreshStopWatch() {
-    return(stopWatchEl.innerHTML);
+function show(title, entries) {
+    this.title = title;
+    this.entries = entries;
 }
-
-// Buttons and Event Listeners
-const elStart = document.getElementById('start');
-const elStop = document.getElementById('stop');
-// const elReset = document.getElementById('reset');
-// const elExport = document.getElementById('export');
-const elChange = document.getElementById('back-button');
-elStart.addEventListener('click', function(event){
+const userInput = document.getElementById('user-input');
+const submitButton = document.getElementById('submit');
+const errorMessage = document.getElementById('error');
+function takeUserInput(event) {
     event.preventDefault();
-    console.log('Start');
-    tableReset();
-    watchReset();
-    watchGo();
+    if (userInput.value === null || userInput.value === "") {
+        errorMessage.classList.replace('d-none', 'd-block');
+    } else {
+        errorMessage.classList.replace('d-block', 'd-none');
+        let userInputValue = userInput.value;
+        userInput.value = "";
+        console.log(userInputValue);
+        const tempShow = new show(userInputValue, []);
+        console.log(tempShow);
+        let loadLocal = JSON.parse(localStorage.getItem("page-timings-show-titles"));
+        if (loadLocal === null) {
+            loadLocal = [];
+        }
+        console.log(loadLocal);
+        loadLocal.push(tempShow);
+        loadLocal.sort((a, b) => a.title.localeCompare(b.title));
+        const saveLocal = JSON.stringify(loadLocal);
+        localStorage.setItem("page-timings-show-titles", saveLocal);
+        displayButtons();
+    }
+}
+submitButton.addEventListener('click', takeUserInput);
+// Step 2: Modal to confirm user input, if user declines, return to Step 1
+let currentElement= "";
+
+document.activeElement.addEventListener('click', function () {
+    document.getElementById('modal-id-value').innerHTML = document.activeElement.innerHTML;
+    currentElement = document.activeElement.innerHTML;
 });
-elStop.addEventListener('click', function(event){
+// Step 3: After user confirms, redirects to index.html
+function redirectApp(event) {
     event.preventDefault();
-    console.log('Stop');
-    watchStop();
-});
-// elReset.addEventListener('click', function(event){
-//     event.preventDefault();
-//     console.log('Reset');
-//     watchReset();
-// });
-// elExport.addEventListener('click', function(){
-//     console.log('Export');
-// });
-elChange.addEventListener('click', function(event){
-    event.preventDefault();
-    console.log('Change');
-    location.assign('landing.html');
-});
-document.addEventListener('keypress', function(event){
-    event.preventDefault();
-    document.activeElement.blur();
-    focus(document.querySelector('header'));
-    if (event.code === 'Space'){
-        spaceBar();
-    }
-});
-
-function pageTurn (){ // Function to increment the page number value
-    currentPage = parseInt(pageNumberEl.innerHTML); // Retreieve value and convert to number
-    currentPage++; // increment value
-    pageNumberEl.innerHTML= String(currentPage); // convert value to string and replace html content
+    location.assign("app.html");
 }
-
-
-// Stopwatch 
-
-
-let [seconds, minutes, hours]=[0,0,0]
-let timeInterval = null;
-
-function timePrint() {
-    let h=hours;
-    if (hours < 10){
-        h = '0'+hours;
-    }
-    let m=minutes;
-    if (minutes < 10){
-        m = '0'+minutes;
-    }
-    let s=seconds;
-    if (seconds < 10){
-        s = '0'+seconds;
-    }
-    stopWatchEl.innerHTML = `${h}:${m}:${s}`
+function nameSave (currentName) {
+    localStorage.setItem('page-timings-current-show', currentName);
 }
-
-function counter() {
-    seconds++;
-    if(seconds>59){
-        seconds=0;
-        minutes++;
-    }
-    if(minutes>59){
-        seconds=0;
-        hours++;
-    }
-    timePrint();
+function confirmButton (event) {
+    nameSave(currentElement);
+    redirectApp(event);
 }
+document.getElementById("modal-id-confirm").addEventListener('click', confirmButton);
 
-function watchGo() {
-    if (timeInterval != null) {
-        clearInterval(timeInterval);
-    }
-    timeInterval = setInterval(counter, 1000);
-}
-
-function watchStop() {
-    clearInterval(timeInterval);
-}
-
-function watchReset() {
-    clearInterval(timeInterval);
-    [seconds, minutes, hours]=[0,0,0]
-    stopWatchEl.innerHTML = '00:00:00'
-}
-
-
-
-// Data Processing
-
-function spaceBar(){
-    refreshEntry();
-    refreshEntries();
-    pageTurn();
-    updateTable();
-}
-
-function refreshEntry() {
-    let pageNow = refreshPageNumber();
-    let timeNow = refreshStopWatch();
-    entry = [pageNow, timeNow];
-    allEntries.push(entry);
-    console.log(entry);
-    // return(entry);
-}
-
-
-
-
-function refreshEntries(){ // puts entries into show storage, and that into the larger storage
-    indexNow = getCurrentIndex();
-    fullArr = refreshAllShows();
-    thisShow = fullArr[indexNow];
-    saveEntries = allEntries;
-    thisShow.entries = allEntries;
-    fullArr[indexNow] = thisShow;
-    localStorage.setItem('page-timings-show-titles', JSON.stringify(fullArr));
-    // console.log(saveEntries);
-    // console.log(thisShow);
-    return(saveEntries);
-}
-
-
-//Table Construction 
-
-
-function updateTable (){ // Function to update table element
-    tableReset(); // Resets table element content
-    buildTable();
-}
-
-function newTableRow() {
-    tableEl.appendChild(document.createElement('tr')); // Create a new table row
-}
-
-function newTableData(data) {
-    tableEl.lastChild.appendChild(document.createElement('td')); // Create a new table data cell
-    tableEl.lastChild.lastChild.innerHTML = allEntries[data][0];
-    tableEl.lastChild.appendChild(document.createElement('td')); // Create a new table data cell
-    tableEl.lastChild.lastChild.innerHTML = allEntries[data][1];
-}
-
-function buildTable() {
-    for (let i in allEntries){
-        newTableRow();
-        newTableData(i);
-    }
-    newTableRow();
-}
-
-function tableReset() {
-    tableEl.innerHTML= ""; // Resets table element content
-}
-
-
-function initData() {
-    allData = refreshAllShows();
-    thisObj = allData[getCurrentIndex()];
-    tableData = thisObj.entries;
-    allEntries = tableData;
-    buildTable();
-    // console.log(tableData);
-    // console.log(allData);
-    // pageNumberEl.innerHTML = tableData[tableData.length-1][0] ||;
-    // stopWatchEl.innerHTML = tableData[tableData.length-1][1] ||;
-}
