@@ -52,6 +52,26 @@ function watchReset() {
     stopwatchEl.innerHTML = '00:00:00'
 }
 
-startButtonEl.addEventListener('click', watchGo);
+const pageEl2= document.getElementById('current-page'); // Identify element for tracking page number
+function firstPageTurn (){ // Function to increment the page number value
+    
+    console.log(pageEl2);
+    if(pageEl2.innerHTML === '0') {
+        pageEl2.value= '1';
+    } else {
+        return;
+    }
+}
+
+function pageReset() {
+    pageEl2.innerHTML = '0';
+}
+
+function clickStart () {
+    watchGo();
+    firstPageTurn();
+}
+
+startButtonEl.addEventListener('click', clickStart);
 stopButtonEl.addEventListener('click', watchStop);
 resetButtonEl.addEventListener('click', watchReset);

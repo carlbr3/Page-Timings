@@ -30,14 +30,10 @@ function displayButtons() {
 // Step 1: Take user input for show title
 const showObject = {
     title: "",
-    currenttime: "",
-    currentpage: "",
     entries: []
 }
-function show(title, currenttime, currentpage, entries) {
+function show(title, entries) {
     this.title = title;
-    this.currenttime = currenttime;
-    this.currentpage = currentpage;
     this.entries = entries;
 }
 const userInput = document.getElementById('user-input');
@@ -52,7 +48,7 @@ function takeUserInput(event) {
         let userInputValue = userInput.value;
         userInput.value = "";
         console.log(userInputValue);
-        const tempShow = new show(userInputValue, "00:00:00", "0", ["Page Number", "Time Stamp", "Page Time"]);
+        const tempShow = new show(userInputValue, []);
         console.log(tempShow);
         let loadLocal = JSON.parse(localStorage.getItem("page-timings-show-titles"));
         if (loadLocal === null) {
