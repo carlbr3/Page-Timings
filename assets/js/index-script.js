@@ -1,125 +1,111 @@
-// Stopwatch elements
-const stopwatchEl = document.getElementById('stopwatch');
-const startButtonEl = document.getElementById('start');
-const stopButtonEl = document.getElementById('stop');
-const resetButtonEl = document.getElementById('reset');
-const showTitleOutput= document.getElementById('show-title-output'); // Identify the banner element
-let getLocal;  // Declare a variable that stores an array of show objects
-let currentIndex= 0; // Declare variable to track index of the current show in the array of shows on local storage
-let getShow;
-const tableEl= document.getElementById('table-container'); // Identify table element
-const pageEl= document.getElementById('current-page'); // Identify element for tracking page number
-let currentTime;
-let currentPage;
+
+
+const tableEl = document.getElementById('table-container');
+const pageNumberEl = document.getElementById('current-page');
+const stopWatchEl = document.getElementById('stopwatch');
+let headerField = document.getElementById('show-title-output'); // Create variable to edit content
+let showTitleValue; // Variable to hold the show title
+let allShows;
+let currentIndex;
+let thisShow;
+let pageNumber;
+let timeStamp;
 let allEntries = [];
-let passVar;
+let entry;
+
+//Index Init
 
 function indexInit() {
-    entriesReset();
-    // Update show title header
-    showTitleOutput.innerHTML = localStorage.getItem('page-timings-current-show'); // Replace the banner text with the current show title from local storage
+    refreshAllShows();
+    refreshShowTitle();
     getCurrentIndex();
-    refreshLocalData();
-    updateTable();
+    refreshPageNumber();
+    initData();
 }
+
 indexInit();
 
 
+
+// Initialize show info
+function refreshAllShows() {
+    allShows = JSON.parse(localStorage.getItem('page-timings-show-titles'));
+    return(allShows);
+}
+
+function refreshShowTitle() {
+    showTitleValue = localStorage.getItem('page-timings-current-show'); // Retrieve Title from storage and update variable with title
+    headerField.innerHTML = showTitleValue; // update headerfield with current show title
+    return(showTitleValue);
+}
+
 function getCurrentIndex() {
-    for (let i in getLocal) { // Identify currentIndex value and assigns it
-        if (getLocal[i].title === showTitleOutput.innerHTML) {
-            currentIndex= i;
+    refreshAllShows();
+    for (let i in allShows) { // Identify currentIndex value and assigns it
+        if (allShows[i].title === headerField.innerHTML) {
+            currentIndex = i;
         }
     }
-    return currentIndex;
+    return(currentIndex);
 }
 
-function refreshLocalData() {
-    getLocal= JSON.parse(localStorage.getItem('page-timings-show-titles'));
-    getShow = getLocal[currentIndex];
+function refreshPageNumber() {
+    return(pageNumberEl.innerHTML);
 }
 
-function updateLocalEntries() { // Write local entries into larger variable
-    tempShowsData = JSON.parse(localStorage.getItem('page-timings-show-titles'));
-    tempShowData = tempShowsData[getCurrentIndex()];
-    tempShowData.entries = allEntries;
-    localStorage.setItem('page-timings-show-titles', JSON.stringify(tempShowsData));
-    console.log(tempShowData);
-    console.log(tempShowsData[getCurrentIndex()])
-    console.log(tempShowsData);
-    console.log(tempShowData);
+function refreshStopWatch() {
+    return(stopWatchEl.innerHTML);
 }
 
-function newEntry () {
-    currentPage = parseInt(pageEl.innerHTML); // updates currentpage variable with current value from html
-    currentTime = String(document.getElementById('stopwatch').innerHTML); // updates currentTime variable with current stopwatch value as a string from HTML
-    currentShow = String(showTitleOutput);
-    const currentEntry = [];
-    currentEntry.push(currentPage, currentTime); // Save current entries data to an array
-    console.log(currentEntry);
-    allEntries.push(currentEntry);
-    localStorage.setItem('page-timings-current-entries', JSON.stringify(allEntries));
-    updateLocalEntries();
-    console.log(allEntries);    
-    if (allEntries === null || allEntries === ''){
-        allEntries = [];
-    }
-}
-
-function updateTable (){ // Function to update table element
-    tableReset(); // Resets table element content
-    let allShows = JSON.parse(localStorage.getItem('page-timings-show-titles'));
-    let thisShow = allShows[getCurrentIndex()];
-    console.log(allShows);
-    console.log(thisShow);
-    passVar = thisShow.entries;
-    console.log(passVar);
-    buildTable();
-};
-
-
-function newTableRow() {
-    tableEl.appendChild(document.createElement('tr')); // Create a new table row
-}
-
-function newTableData(data) {
-    tableEl.lastChild.appendChild(document.createElement('td')); // Create a new table data cell
-    tableEl.lastChild.lastChild.innerHTML = passVar[data][0];
-    tableEl.lastChild.appendChild(document.createElement('td')); // Create a new table data cell
-    tableEl.lastChild.lastChild.innerHTML = passVar[data][1];
-}
-
-function buildTable() {
-    for (let i in passVar){
-        newTableRow();
-        newTableData(i);
-    }
-    newTableRow();
-}
-function pageTurn (){ // Function to increment the page number value
-    currentPage = parseInt(pageEl.innerHTML); // Retreieve value and convert to number
-    currentPage++; // increment value
-    pageEl.innerHTML= String(currentPage); // convert value to string and replace html content
-}
-
-function focusHeader() {
-    focus(document.querySelector('header'));
-}
-
+// Buttons and Event Listeners
+const elStart = document.getElementById('start');
+const elStop = document.getElementById('stop');
+// const elReset = document.getElementById('reset');
+// const elExport = document.getElementById('export');
+const elChange = document.getElementById('back-button');
+elStart.addEventListener('click', function(event){
+    event.preventDefault();
+    console.log('Start');
+    tableReset();
+    watchReset();
+    watchGo();
+});
+elStop.addEventListener('click', function(event){
+    event.preventDefault();
+    console.log('Stop');
+    watchStop();
+});
+// elReset.addEventListener('click', function(event){
+//     event.preventDefault();
+//     console.log('Reset');
+//     watchReset();
+// });
+// elExport.addEventListener('click', function(){
+//     console.log('Export');
+// });
+elChange.addEventListener('click', function(event){
+    event.preventDefault();
+    console.log('Change');
+    location.assign('landing.html');
+});
 document.addEventListener('keypress', function(event){
     event.preventDefault();
-    startButtonEl.blur();
-    focusHeader();
+    document.activeElement.blur();
+    focus(document.querySelector('header'));
     if (event.code === 'Space'){
-        newEntry();
-        pageTurn();
-        updateTable();
+        spaceBar();
     }
 });
-// console.log (getLocal);
-// console.log (currentIndex);
 
-// Stopwatch Functinoality
+function pageTurn (){ // Function to increment the page number value
+    currentPage = parseInt(pageNumberEl.innerHTML); // Retreieve value and convert to number
+    currentPage++; // increment value
+    pageNumberEl.innerHTML= String(currentPage); // convert value to string and replace html content
+}
+
+
+// Stopwatch 
+
 
 let [seconds, minutes, hours]=[0,0,0]
 let timeInterval = null;
@@ -137,7 +123,7 @@ function timePrint() {
     if (seconds < 10){
         s = '0'+seconds;
     }
-    stopwatchEl.innerHTML = `${h}:${m}:${s}`
+    stopWatchEl.innerHTML = `${h}:${m}:${s}`
 }
 
 function counter() {
@@ -167,47 +153,86 @@ function watchStop() {
 function watchReset() {
     clearInterval(timeInterval);
     [seconds, minutes, hours]=[0,0,0]
-    stopwatchEl.innerHTML = '00:00:00'
+    stopWatchEl.innerHTML = '00:00:00'
 }
 
-function pageReset() {
-    pageEl.innerHTML = '0';
+
+
+// Data Processing
+
+function spaceBar(){
+    refreshEntry();
+    refreshEntries();
+    pageTurn();
+    updateTable();
 }
 
-function entriesReset() {
-    localStorage.setItem('page-timings-current-entries', JSON.stringify([]));
-    allEntries = [];
-    updateLocalEntries();
-    if (allEntries === null || allEntries === ''){
-        allEntries = [];
+function refreshEntry() {
+    let pageNow = refreshPageNumber();
+    let timeNow = refreshStopWatch();
+    entry = [pageNow, timeNow];
+    allEntries.push(entry);
+    console.log(entry);
+    // return(entry);
+}
+
+
+
+
+function refreshEntries(){ // puts entries into show storage, and that into the larger storage
+    indexNow = getCurrentIndex();
+    fullArr = refreshAllShows();
+    thisShow = fullArr[indexNow];
+    saveEntries = allEntries;
+    thisShow.entries = allEntries;
+    fullArr[indexNow] = thisShow;
+    localStorage.setItem('page-timings-show-titles', JSON.stringify(fullArr));
+    // console.log(saveEntries);
+    // console.log(thisShow);
+    return(saveEntries);
+}
+
+
+//Table Construction 
+
+
+function updateTable (){ // Function to update table element
+    tableReset(); // Resets table element content
+    buildTable();
+}
+
+function newTableRow() {
+    tableEl.appendChild(document.createElement('tr')); // Create a new table row
+}
+
+function newTableData(data) {
+    tableEl.lastChild.appendChild(document.createElement('td')); // Create a new table data cell
+    tableEl.lastChild.lastChild.innerHTML = allEntries[data][0];
+    tableEl.lastChild.appendChild(document.createElement('td')); // Create a new table data cell
+    tableEl.lastChild.lastChild.innerHTML = allEntries[data][1];
+}
+
+function buildTable() {
+    for (let i in allEntries){
+        newTableRow();
+        newTableData(i);
     }
-    console.log(allEntries);    
+    newTableRow();
 }
 
 function tableReset() {
     tableEl.innerHTML= ""; // Resets table element content
 }
-function clickStart () {
-    startButtonEl.blur();
-    focusHeader();
-    watchGo();
+
+
+function initData() {
+    allData = refreshAllShows();
+    thisObj = allData[getCurrentIndex()];
+    tableData = thisObj.entries;
+    allEntries = tableData;
+    buildTable();
+    // console.log(tableData);
+    // console.log(allData);
+    // pageNumberEl.innerHTML = tableData[tableData.length-1][0] ||;
+    // stopWatchEl.innerHTML = tableData[tableData.length-1][1] ||;
 }
-
-function indexReset() {
-    watchReset();
-    pageReset();
-    entriesReset();
-    tableReset();
-}
-
-startButtonEl.addEventListener('click', clickStart);
-stopButtonEl.addEventListener('click', watchStop);
-resetButtonEl.addEventListener('click', indexReset);
-
-
-
-
-
-
-
-
